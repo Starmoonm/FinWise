@@ -1,0 +1,142 @@
+{
+  "entities": {
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Income, expense, investment or credit card payment transaction",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "type": { "type": "string", "enum": ["income", "expense", "invest", "cardPayment"] },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "mode": { "type": "string", "enum": ["Cash", "UPI", "Bank", "Credit Card", "Imported"] },
+        "note": { "type": "string" },
+        "imported": { "type": "boolean" },
+        "loanId": { "type": "string" },
+        "investmentId": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["date", "type", "category", "amount", "mode"]
+    },
+    "Loan": {
+      "title": "Loan",
+      "description": "Borrowed or lent loan tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "direction": { "type": "string", "enum": ["borrowed", "lent"] },
+        "category": { "type": "string" },
+        "principal": { "type": "number" },
+        "outstanding": { "type": "number" },
+        "emi": { "type": "number" },
+        "totalEmis": { "type": "number" },
+        "paidEmis": { "type": "number" },
+        "paidAmount": { "type": "number" },
+        "firstEmiDate": { "type": "string" },
+        "emiDay": { "type": "number" },
+        "interestRate": { "type": "number" },
+        "note": { "type": "string" }
+      },
+      "required": ["name", "direction", "principal", "outstanding"]
+    },
+    "Investment": {
+      "title": "Investment",
+      "description": "Investment portfolio items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "currentValue": { "type": "number" },
+        "installment": { "type": "number" },
+        "frequency": { "type": "string", "enum": ["monthly", "quarterly", "yearly", "one-time"] },
+        "nextDueDate": { "type": "string" },
+        "autoPay": { "type": "boolean" },
+        "note": { "type": "string" }
+      },
+      "required": ["name", "type", "currentValue", "installment", "frequency"]
+    },
+    "Goal": {
+      "title": "Goal",
+      "description": "Savings and emergency fund goals",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "target": { "type": "number" },
+        "saved": { "type": "number" },
+        "targetDate": { "type": "string" },
+        "isEmergencyFund": { "type": "boolean" }
+      },
+      "required": ["name", "target", "saved"]
+    },
+    "Insurance": {
+      "title": "Insurance",
+      "description": "Insurance policies",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "cover": { "type": "number" },
+        "yearlyPremium": { "type": "number" },
+        "renewalDate": { "type": "string" }
+      },
+      "required": ["name", "cover", "yearlyPremium"]
+    },
+    "Card": {
+      "title": "Card",
+      "description": "Credit card tracking",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "openingOutstanding": { "type": "number" },
+        "asOf": { "type": "string" }
+      },
+      "required": ["name", "openingOutstanding", "asOf"]
+    },
+    "Asset": {
+      "title": "Asset",
+      "description": "Other assets like bank balance, gold, property",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "value": { "type": "number" }
+      },
+      "required": ["name", "value"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "User transactions"
+    },
+    "/users/{uid}/loans/{loanId}": {
+      "schema": "Loan",
+      "description": "User loans"
+    },
+    "/users/{uid}/investments/{investmentId}": {
+      "schema": "Investment",
+      "description": "User investments"
+    },
+    "/users/{uid}/goals/{goalId}": {
+      "schema": "Goal",
+      "description": "User goals"
+    },
+    "/users/{uid}/insurance/{insuranceId}": {
+      "schema": "Insurance",
+      "description": "User insurance"
+    },
+    "/users/{uid}/cards/{cardId}": {
+      "schema": "Card",
+      "description": "User credit cards"
+    },
+    "/users/{uid}/assets/{assetId}": {
+      "schema": "Asset",
+      "description": "User assets"
+    }
+  }
+}

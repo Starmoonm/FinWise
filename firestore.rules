@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserEmail() {
+      return request.auth.token.email.lower();
+    }
+    
+    function getWorkspace(workspaceId) {
+      return get(/databases/$(database)/documents/workspaces/$(workspaceId)).data;
+    }
+    
+    // Check if user is owner or listed member
+    function isMember(ws) {
+      return isAuthenticated() && (
+        ws.ownerId == request.auth.uid ||
+        (ws.memberEmails != null && getUserEmail() in ws.memberEmails)
+      );
+    }
+    
+    function getRole(ws) {
+      return ws.ownerId == request.auth.uid ? 'owner' :
+        (ws.members != null && ws.members[getUserEmail()] != null ? ws.members[getUserEmail()].role : 'outsider');
+    }
+
+    // Legacy users collection
+    match /users/{uid}/{document=**} {
+      allow read, write: if isAuthenticated() && request.auth.uid == uid;
+    }
+
+    // Workspaces collection
+    match /workspaces/{workspaceId} {
+      // Read allowed if owner or member
+      allow read: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.memberEmails != null && getUserEmail() in resource.data.memberEmails)
+      );
+      
+      // Create allowed for authenticated user
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      
+      // Update allowed for owner or admin
+      allow update: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        (resource.data.members != null && resource.data.members[getUserEmail()] != null &&
+         resource.data.members[getUserEmail()].role in ['owner', 'admin'])
+      );
+      
+      // Delete allowed ONLY for owner
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+
+      // Subcollections inside workspace
+      match /{subcollection}/{docId} {
+        allow read: if isAuthenticated() && isMember(getWorkspace(workspaceId));
+        
+        allow create: if isAuthenticated() && (
+          getRole(getWorkspace(workspaceId)) in ['owner', 'admin', 'editor'] ||
+          (subcollection == 'transactions' && getRole(getWorkspace(workspaceId)) == 'entries_only')
+        );
+        
+        allow update: if isAuthenticated() && (
+          getRole(getWorkspace(workspaceId)) in ['owner', 'admin', 'editor'] ||
+          (subcollection == 'transactions' && getRole(getWorkspace(workspaceId)) == 'entries_only' &&
+           resource.data.createdBy != null && resource.data.createdBy.email == getUserEmail())
+        );
+        
+        allow delete: if isAuthenticated() && (
+          getRole(getWorkspace(workspaceId)) in ['owner', 'admin', 'editor']
+        );
+      }
+    }
+
+    // Global market rate caching
+    match /market/{docId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

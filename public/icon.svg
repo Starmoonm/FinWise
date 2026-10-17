@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#059669" />
+      <stop offset="50%" stop-color="#047857" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcd34d" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)" />
+  <circle cx="256" cy="256" r="190" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="6" />
+  <g filter="url(#shadow)">
+    <!-- Rupee symbol stylized -->
+    <path d="M170 148 h172 M170 200 h130 M170 148 v180" stroke="#ffffff" stroke-width="32" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+    <path d="M220 200 c55 0 90 -26 90 -52 c0 -26 -35 -52 -90 -52" stroke="#ffffff" stroke-width="32" stroke-linecap="round" fill="none" transform="translate(0, 52)" />
+    <path d="M225 252 l105 130" stroke="url(#accent)" stroke-width="34" stroke-linecap="round" />
+    <circle cx="370" cy="148" r="14" fill="#fcd34d" />
+  </g>
+</svg>
